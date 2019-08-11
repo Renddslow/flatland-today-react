@@ -99,7 +99,7 @@ function App() {
       window.history.replaceState({}, "", `/weeks/${currentWeek}`);
     }
 
-    const [_, week] = url;
+    const week = url[1];
 
     if (week !== currentWeek || moment().format("dddd") !== "Sunday") {
       const date = moment(week, "Y-w").format("MMMM Do");
