@@ -34,6 +34,12 @@ export default (week, data) => {
     ]
   );
 
+  tabs.push({
+    title: "Challenge",
+    id: "challenge",
+    body: <Challenge />
+  });
+
   if (data.announcements && data.announcements.length) {
     tabs.push({
       title: "Announcements",
@@ -41,12 +47,6 @@ export default (week, data) => {
       body: <Announcements />
     });
   }
-
-  tabs.push({
-    title: "Challenge",
-    id: "challenge",
-    body: <Challenge />
-  });
 
   return tabs;
 };
