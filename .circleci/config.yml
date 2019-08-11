@@ -41,8 +41,8 @@ jobs:
           name: Build and Deploy Docker Image
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker build -t dmsi/agility-public:latest ./
-            docker push dmsi/agility-public:latest
+            docker build -t flatlandchurch/today:latest ./
+            docker push flatlandchurch/today:latest
 
 workflows:
   version: 2
