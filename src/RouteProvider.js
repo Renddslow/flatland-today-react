@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import moment from 'moment';
 import qs from 'qs';
 import { createBrowserHistory } from 'history';
@@ -28,7 +28,7 @@ const RouteProvider = ({ children }) => {
 
       setWeek(url[1]);
     }
-  }, [pathname, search]);
+  }, [pathname, search, currentWeek]);
 
   useEffect(() => {
     const unlisten = history.listen((location) => {

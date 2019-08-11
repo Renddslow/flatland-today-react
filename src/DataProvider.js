@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import getTabs from './getTabs';
 
 const DataProvider = ({ children, week }) => {

@@ -67,7 +67,7 @@ const Tabs = props => {
     })}`;
 
     props.history.push(url);
-  }, [activeTab]);
+  }, [activeTab, props.history]);
 
   const body = React.cloneElement(activeTab.body, {
     data: props.data,
