@@ -31,7 +31,7 @@ jobs:
           command: |
             export PATH=$PATH:$HOME/$CIRCLE_PROJECT_REPONAME/node_modules/.bin
       - run: yarn
-      - run: yarn build
+      - run: yarn build:prod
       - save_cache:
           key: *npm_cache_key
           paths:
