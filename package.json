@@ -6,6 +6,7 @@
   "main": "src/index.js",
   "dependencies": {
     "dot-prop": "5.1.0",
+    "history": "^4.9.0",
     "marked": "0.7.0",
     "moment": "2.24.0",
     "qs": "6.7.0",

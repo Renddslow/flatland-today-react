@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
 import uuid from "uuid/v4";
-import moment from "moment";
-import qs from "qs";
+import qs from 'qs';
 
 import Tabs from "./components/Tabs";
 import Logo from "./Logo";
 
-import getTabs from "./getTabs";
+import RouteProvider from './RouteProvider';
+import DataProvider from './DataProvider';
 
 import "./styles.css";
 
@@ -74,106 +74,64 @@ const ErrorMessage = styled.div`
 `;
 
 function App() {
-  const { tab } = qs.parse(window.location.search.replace("?", ""));
-
-  const [activeTab, setActiveTab] = useState(tab);
-  const [loading, setLoading] = useState(true);
-  const [title, setTitle] = useState("Today");
-  const [tabs, setTabs] = useState([]);
-  const [needsContent, setNeedsContent] = useState(false);
-  const [data, setData] = useState({});
-  const [thisWeek, setThisWeek] = useState();
+  const setHistoryTab = (history) => (tabId) => {
+    const search = qs.parse(window.location.search.replace('?', ''));
+    const url = `${window.location.pathname}?${qs.stringify({
+      ...search,
+      tab: tabId
+    })}`;
+    history.push(url);
+  };
 
   useEffect(() => {
     const hasId = window.localStorage.getItem("flatland:today:id");
-    const urlMatch = /\/weeks\/([\d]{4}-[\d]{2})/g;
-    const currentWeek = moment().format("Y-w");
 
     if (!hasId) {
       window.localStorage.setItem("flatland:today:id", uuid());
     }
-
-    const url = urlMatch.exec(window.location.pathname || "");
-
-    if (!url) {
-      window.history.replaceState({}, "", `/weeks/${currentWeek}`);
-    }
-
-    const week = url[1];
-
-    if (week !== currentWeek || moment().format("dddd") !== "Sunday") {
-      const date = moment(week, "Y-w").format("MMMM Do");
-      setTitle(`Week of ${date}`);
-    }
-
-    const cachedWeek = window.localStorage.getItem(
-      `flatland:today:cache:${week}`
-    );
-
-    const complete = (week, data) => {
-      setLoading(false);
-      setTabs(getTabs(week, data));
-      setData(data);
-    };
-
-    setThisWeek(week);
-
-    if (cachedWeek) {
-      const data = JSON.parse(cachedWeek || "{}");
-      complete(week, data);
-    } else {
-      fetch(
-        `https://api.flatlandchurch.com/v2/weeks/${week}?key=pk_e6afff4e5ad186e9ce389cc21c225`
-      )
-        .then(data => data.json())
-        .then(data => {
-          complete(week, data);
-
-          if (data.lockCache) {
-            window.localStorage.setItem(
-              `flatland:today:cache:${week}`,
-              JSON.stringify(data)
-            );
-          }
-        })
-        .catch(() => {
-          setNeedsContent(true);
-        });
-    }
   }, []);
 
   return (
-    <Container className="App">
-      <Header>
-        <h1>{title}</h1>
-        <Logo />
-      </Header>
-      {!loading && !!tabs.length && (
-        <Tabs
-          activeId={activeTab}
-          onChange={id => setActiveTab(id)}
-          data={data}
-          week={thisWeek}
-        >
-          {tabs}
-        </Tabs>
+    <RouteProvider>
+      {({ week, activeTab, title, history }) => (
+        <DataProvider week={week}>
+          {({ data, tabs, loading, needsContent }) => (
+            <Container className="App">
+              <Header>
+                <h1>{title}</h1>
+                <Logo />
+              </Header>
+              {!loading && !!tabs.length && (
+                <Tabs
+                  activeId={activeTab}
+                  onChange={setHistoryTab(history)}
+                  data={data}
+                  week={week}
+                  history={history}
+                >
+                  {tabs}
+                </Tabs>
+              )}
+              {needsContent && (
+                <ErrorMessage>
+                  <h2>Alright, so one of two things happened.</h2>
+                  <p>
+                    Either, you're a <em>time traveler</em> and you're trying to figure
+                    out what God has to say to you in the future, or{" "}
+                    <em>we're running a little behind</em> and are still working on
+                    typing everything up for the week.
+                  </p>
+                  <p>
+                    I'm sure if you try again in a few minutes or so everything will be
+                    right as rain.
+                  </p>
+                </ErrorMessage>
+              )}
+            </Container>
+          )}
+        </DataProvider>
       )}
-      {needsContent && (
-        <ErrorMessage>
-          <h2>Alright, so one of two things happened.</h2>
-          <p>
-            Either, you're a <em>time traveler</em> and you're trying to figure
-            out what God has to say to you in the future, or{" "}
-            <em>we're running a little behind</em> and are still working on
-            typing everything up for the week.
-          </p>
-          <p>
-            I'm sure if you try again in a few minutes or so everything will be
-            right as rain.
-          </p>
-        </ErrorMessage>
-      )}
-    </Container>
+    </RouteProvider>
   );
 }
 
