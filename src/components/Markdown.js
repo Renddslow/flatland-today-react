@@ -35,6 +35,10 @@ const MarkdownContainer = styled.div`
       margin-bottom: 0;
     }
   }
+  
+  ul {
+    padding: 0 24px;
+  }
 `;
 
 const Markdown = ({ children }) => {

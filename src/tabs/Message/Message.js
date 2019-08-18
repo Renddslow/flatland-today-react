@@ -33,6 +33,10 @@ const MessageWrapper = styled.div`
     letter-spacing: -0.5px;
     line-height: 34px;
   }
+  
+  ul {
+    padding: 0 24px;
+  }
 `;
 
 const Title = styled.h2`
